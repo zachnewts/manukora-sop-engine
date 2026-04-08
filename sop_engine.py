@@ -143,6 +143,7 @@ Your output standards:
 - When demand trends conflict with revenue materiality (e.g., a declining SKU still generating significant revenue), flag the conflict explicitly and state your recommendation.
 - Write for a CEO who has 5 minutes. Lead with what matters most.
 - Use the pre-computed metrics provided — they are verified. Do not re-derive or round them differently.
+- Only state specific timeframes (days, weeks) if they can be directly derived from the monthly data provided. Do not fabricate or approximate timeframes beyond what the data supports. Use months-of-cover as the unit of measure.
 - Be direct. No hedging, no "it's worth noting," no filler. State the situation, the implication, and the action.
 
 Example of the output quality expected for reorder recommendations:
@@ -251,8 +252,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Manukora S&amp;OP Briefing — {report_month}</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
   :root {{
     --navy: #0f1a2e;
     --navy-mid: #1e2d45;
