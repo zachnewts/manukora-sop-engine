@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S&amp;OP Briefing Engine — Project Walkthrough</title>
+<style>
+  :root {
+    --navy: #0f1a2e;
+    --navy-mid: #1e2d45;
+    --navy-light: #2d3a4a;
+    --amber: #d4a843;
+    --amber-bright: #e8b84a;
+    --amber-light: #f5e6c0;
+    --amber-dim: rgba(212, 168, 67, 0.10);
+    --red: #dc3545;
+    --red-bg: rgba(220, 53, 69, 0.06);
+    --green: #198754;
+    --green-bg: rgba(25, 135, 84, 0.06);
+    --orange: #e67e22;
+    --orange-bg: rgba(230, 126, 34, 0.06);
+    --purple: #7c3aed;
+    --purple-bg: rgba(124, 58, 237, 0.06);
+    --gray-50: #f8f9fb;
+    --gray-100: #f1f3f5;
+    --gray-200: #e2e5e9;
+    --gray-300: #cdd1d7;
+    --gray-400: #9ca3af;
+    --gray-500: #7b8290;
+    --gray-600: #5f6673;
+    --gray-900: #111827;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "SF Mono", "Fira Code", "Fira Mono", Menlo, monospace;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--navy);
+    background: var(--gray-50);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Layout ── */
+  .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 80px 0; }
+  section:nth-child(even) { background: #fff; }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #162238 50%, var(--navy-mid) 100%);
+    padding: 100px 0 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(212,168,67,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    bottom: -80px; left: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(212,168,67,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .hero p {
+    font-size: 18px;
+    color: rgba(255,255,255,0.6);
+    max-width: 560px;
+    margin: 0 auto 36px;
+    line-height: 1.6;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--amber);
+    color: var(--navy);
+  }
+  .btn-primary:hover { background: var(--amber-bright); transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.85);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); }
+
+  /* ── Section Headers ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1.2;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+
+  .section-intro {
+    font-size: 17px;
+    color: var(--gray-600);
+    max-width: 640px;
+    margin-bottom: 40px;
+    line-height: 1.65;
+  }
+
+  /* ── Insight Card ── */
+  .insight-card {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+    border-radius: var(--radius);
+    padding: 32px 36px;
+    color: rgba(255,255,255,0.88);
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .insight-card::before {
+    content: "";
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(212,168,67,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .insight-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .insight-card p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.75);
+  }
+
+  .insight-card strong { color: var(--amber-bright); font-weight: 600; }
+
+  /* ── Flow Diagram ── */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 0 -12px;
+  }
+
+  .flow-step {
+    flex: 1;
+    text-align: center;
+    padding: 28px 20px;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-100);
+    position: relative;
+  }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    flex-shrink: 0;
+    color: var(--amber);
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .flow-icon {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin: 0 auto 12px;
+  }
+
+  .flow-step:nth-child(1) .flow-icon { background: var(--green-bg); }
+  .flow-step:nth-child(3) .flow-icon { background: var(--orange-bg); }
+  .flow-step:nth-child(5) .flow-icon { background: var(--purple-bg); }
+  .flow-step:nth-child(7) .flow-icon { background: var(--amber-dim); }
+
+  .flow-step h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .flow-step p {
+    font-size: 12px;
+    color: var(--gray-500);
+    line-height: 1.5;
+  }
+
+  /* ── Metric Grid ── */
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .metric-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-100);
+    border-left: 3px solid var(--amber);
+  }
+
+  .metric-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .metric-card .formula {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-bottom: 6px;
+  }
+
+  .metric-card p {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.5;
+  }
+
+  .metric-highlight {
+    text-align: center;
+    padding: 20px;
+    background: var(--amber-dim);
+    border-radius: 10px;
+    margin-bottom: 28px;
+  }
+
+  .metric-highlight .number {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+  }
+
+  .metric-highlight p {
+    font-size: 14px;
+    color: var(--gray-600);
+    margin-top: 4px;
+  }
+
+  /* ── Prompts Section ── */
+  .prompt-intro { margin-bottom: 24px; }
+
+  .prompt-card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-100);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .prompt-card summary {
+    padding: 20px 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    list-style: none;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .prompt-card summary:hover { background: var(--gray-50); }
+
+  .prompt-card summary::-webkit-details-marker { display: none; }
+
+  .prompt-card summary::before {
+    content: "";
+    width: 20px; height: 20px;
+    border-radius: 4px;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M3 1l4 4-4 4' stroke='%235f6673' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: transform 0.2s;
+  }
+
+  .prompt-card[open] summary::before { transform: rotate(90deg); }
+
+  .prompt-card .summary-content { flex: 1; }
+
+  .prompt-card .summary-content h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 2px;
+  }
+
+  .prompt-card .summary-content p {
+    font-size: 13px;
+    color: var(--gray-500);
+    line-height: 1.4;
+  }
+
+  .prompt-body {
+    padding: 0 28px 24px;
+    border-top: 1px solid var(--gray-100);
+  }
+
+  .prompt-body pre {
+    background: var(--navy);
+    color: rgba(255,255,255,0.85);
+    padding: 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.7;
+    margin-top: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .prompt-body .highlight { color: var(--amber-bright); }
+
+  /* ── Briefing Embed ── */
+  .briefing-header-note {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .briefing-header-note .tag {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--amber-dim);
+    border: 1px solid rgba(212,168,67,0.2);
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .briefing-embed {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+  }
+
+  .briefing-chrome {
+    background: var(--gray-100);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  .briefing-chrome-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--gray-300);
+  }
+
+  .briefing-chrome-dot:nth-child(1) { background: #ff5f57; }
+  .briefing-chrome-dot:nth-child(2) { background: #febc2e; }
+  .briefing-chrome-dot:nth-child(3) { background: #28c840; }
+
+  .briefing-chrome-url {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    color: var(--gray-400);
+    font-family: var(--mono);
+  }
+
+  .briefing-content {
+    padding: 40px;
+  }
+
+  .briefing-content h3.briefing-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--amber);
+  }
+
+  .briefing-section {
+    background: var(--gray-50);
+    border-radius: 10px;
+    border: 1px solid var(--gray-100);
+    padding: 24px 28px;
+    margin-bottom: 16px;
+  }
+
+  .briefing-section h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .briefing-section h4 .icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .briefing-section p,
+  .briefing-section li {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--gray-600);
+    margin-bottom: 8px;
+  }
+
+  .briefing-section strong { color: var(--navy); font-weight: 650; }
+
+  .briefing-section ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .briefing-section ul li {
+    padding: 8px 0 8px 20px;
+    position: relative;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .briefing-section ul li:last-child { border-bottom: none; }
+
+  .briefing-section ul li::before {
+    content: "";
+    position: absolute;
+    left: 4px; top: 16px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+  }
+
+  .icon-summary { background: rgba(212,168,67,0.15); }
+  .icon-sales { background: var(--green-bg); }
+  .icon-risk { background: var(--red-bg); }
+  .icon-reorder { background: var(--orange-bg); }
+  .icon-watch { background: var(--purple-bg); }
+
+  .priority-card {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+  }
+
+  .priority-card:nth-child(2) { border-left: 4px solid var(--red); }
+  .priority-card:nth-child(3) { border-left: 4px solid var(--orange); }
+  .priority-card:nth-child(4) { border-left: 4px solid var(--amber); }
+  .priority-card:nth-child(5) { border-left: 4px solid var(--gray-300); }
+
+  .priority-card h5 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .priority-card p {
+    font-size: 13px;
+    margin-bottom: 0;
+  }
+
+  /* ── Terminal Card ── */
+  .terminal {
+    background: var(--navy);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+
+  .terminal-bar {
+    background: rgba(255,255,255,0.06);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .terminal-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .terminal-dot:nth-child(1) { background: #ff5f57; }
+  .terminal-dot:nth-child(2) { background: #febc2e; }
+  .terminal-dot:nth-child(3) { background: #28c840; }
+
+  .terminal-body {
+    padding: 24px;
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 2;
+    color: rgba(255,255,255,0.85);
+  }
+
+  .terminal-body .comment { color: rgba(255,255,255,0.3); }
+  .terminal-body .prompt-char { color: var(--amber); }
+  .terminal-body .cmd { color: #fff; }
+
+  .cli-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .cli-table th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--navy);
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--gray-200);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .cli-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gray-100);
+    color: var(--gray-600);
+  }
+
+  .cli-table td:first-child {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  .one-file {
+    text-align: center;
+    padding: 16px;
+    font-size: 14px;
+    color: var(--gray-500);
+  }
+
+  .one-file strong { color: var(--navy); }
+
+  /* ── Production Cards ── */
+  .prod-grid {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .prod-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-100);
+  }
+
+  .prod-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .prod-card p {
+    font-size: 13px;
+    color: var(--gray-500);
+    line-height: 1.5;
+  }
+
+  .prod-card.current { border-left: 3px solid var(--gray-300); }
+  .prod-card.future { border-left: 3px solid var(--amber); }
+
+  .prod-arrow {
+    text-align: center;
+    color: var(--amber);
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--navy);
+    padding: 48px 0;
+    text-align: center;
+    color: rgba(255,255,255,0.4);
+    font-size: 13px;
+  }
+
+  footer a {
+    color: var(--amber);
+    text-decoration: none;
+  }
+  footer a:hover { text-decoration: underline; }
+
+  footer .footer-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 6px;
+  }
+
+  footer .footer-tech {
+    margin-top: 12px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.25);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    section { padding: 56px 0; }
+    .hero { padding: 72px 0 56px; }
+    .flow { flex-direction: column; gap: 0; }
+    .flow-arrow { width: auto; height: 32px; transform: rotate(90deg); }
+    .prod-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .prod-arrow { transform: rotate(90deg); }
+    .briefing-content { padding: 24px; }
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    .hero { background: var(--navy) !important; }
+    section { padding: 40px 0; break-inside: avoid; }
+    .briefing-embed { box-shadow: none; border: 1px solid var(--gray-200); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════ -->
+<!-- 1. HERO                                 -->
+<!-- ════════════════════════════════════════ -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-label">Manukora &mdash; Assignment</div>
+    <h1>S&amp;OP Briefing Engine</h1>
+    <p>A Python tool that turns raw inventory data into a monthly executive briefing — powered by pre-computed analytics and Claude.</p>
+    <div class="hero-ctas">
+      <a href="#output" class="btn btn-primary">See the Output &darr;</a>
+      <a href="https://github.com/zachnewts/manukora-sop-engine" target="_blank" class="btn btn-secondary">View Code &nearr;</a>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- 2. THE APPROACH                         -->
+<!-- ════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">The Approach</div>
+    <h2>Separate Math from Reasoning</h2>
+    <p class="section-intro">LLMs are unreliable at arithmetic but excellent at inference, synthesis, and narrative. This tool pre-computes every metric in Python, then feeds enriched data to Claude. The model's job is to do what it's actually good at &mdash; interpret the numbers, make recommendations, and write a briefing a CEO can act on.</p>
+
+    <div class="insight-card">
+      <h3>The key design decision</h3>
+      <p>Don't ask the AI to calculate that MGO 263+ 500g has 2.49 months of cover. <strong>Tell it</strong> the cover is 2.49 months, that demand grew 23%, and that $37K/month in revenue is at stake. Then ask: <strong>what should we do about it?</strong></p>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-icon">&#128203;</div>
+        <h4>Raw Data</h4>
+        <p>12 SKUs, 4 months<br>sales + inventory CSV</p>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">
+        <div class="flow-icon">&#9881;</div>
+        <h4>Compute Engine</h4>
+        <p>25 derived metrics<br>per SKU in pandas</p>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">
+        <div class="flow-icon">&#129504;</div>
+        <h4>Claude Inference</h4>
+        <p>Interprets, prioritizes<br>recommends actions</p>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">
+        <div class="flow-icon">&#128196;</div>
+        <h4>Executive Briefing</h4>
+        <p>Styled HTML report<br>5-minute read</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- 3. WHAT GETS COMPUTED                   -->
+<!-- ════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">Data Engine</div>
+    <h2>What Gets Computed</h2>
+    <p class="section-intro">Every number the AI references is pre-calculated and verified. The model never does arithmetic &mdash; it reasons on facts.</p>
+
+    <div class="metric-highlight">
+      <div class="number">25</div>
+      <p>derived metrics computed per SKU before the LLM sees anything</p>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-card">
+        <h4>Combined Demand</h4>
+        <div class="formula">Shopify_M + Amazon_M</div>
+        <p>Pooled channel demand per month. Single inventory pool serves both.</p>
+      </div>
+      <div class="metric-card">
+        <h4>Trend %</h4>
+        <div class="formula">% change M1&rarr;M4</div>
+        <p>Demand trajectory. Bioactive Blends use M2&rarr;M4 (launched mid-Jan).</p>
+      </div>
+      <div class="metric-card">
+        <h4>Months of Cover</h4>
+        <div class="formula">Stock / current_rate</div>
+        <p>Raw and effective (with incoming orders). Gap vs target computed.</p>
+      </div>
+      <div class="metric-card">
+        <h4>Revenue at Risk</h4>
+        <div class="formula">monthly_rev &times; shortfall</div>
+        <p>Dollar exposure if stock runs out. Drives priority ranking.</p>
+      </div>
+      <div class="metric-card">
+        <h4>Reorder Priority Score</h4>
+        <div class="formula">risk &times; urgency</div>
+        <p>Composite ranking: revenue materiality weighted by cover urgency.</p>
+      </div>
+      <div class="metric-card">
+        <h4>Business Rules</h4>
+        <div class="formula">encoded per SKU</div>
+        <p>Bioactive launch window, Propolis phase-out, MGO 1700+ 3-month target.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- 4. THE PROMPTS                          -->
+<!-- ════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">Prompt Engineering</div>
+    <h2>The Prompt Is the Product</h2>
+    <p class="section-intro">Two layers. The system prompt sets the analyst persona and output standards. The user prompt delivers a structured payload: business context, pre-computed data, and format instructions.</p>
+
+    <details class="prompt-card">
+      <summary>
+        <div class="summary-content">
+          <h4>System Prompt</h4>
+          <p>Sets the analyst persona and output standards &mdash; inference, not description. Includes a benchmark example of expected output quality.</p>
+        </div>
+      </summary>
+      <div class="prompt-body">
+        <pre>You are a senior S&OP analyst at a premium DTC consumer brand
+(Manukora — premium Manuka honey). You write monthly briefings
+for the CEO.
+
+Your output standards:
+- Every recommendation MUST include: specific numbers, business
+  impact in dollars, a clear action, and a priority rank.
+- You do <span class="highlight">INFERENCE and JUDGMENT</span> — not data description.
+  Don't say "sales increased 23%." Say what that means for the
+  business and what to do about it.
+- When demand trends conflict with revenue materiality, flag the
+  conflict explicitly and state your recommendation.
+- Write for a CEO who has 5 minutes. Lead with what matters most.
+- Use the pre-computed metrics provided — they are verified.
+  Do not re-derive or round them differently.
+- Only state specific timeframes if they can be directly derived
+  from the data. Use months-of-cover as the unit of measure.
+- Be direct. No hedging, no filler.
+
+Example of expected output quality:
+<span class="highlight">"MGO 263+ 500g has ~2.5 months of cover at current combined
+sell-through, no stock on order, and demand has grown 23% over
+4 months. At $54.99 retail and ~684 units/month combined, this
+is ~$37K/month in revenue at risk. Cover will drop below target
+before a new order could arrive — recommend ordering immediately.
+Priority 1."</span>
+
+Match this level of specificity and decisiveness throughout.</pre>
+      </div>
+    </details>
+
+    <details class="prompt-card">
+      <summary>
+        <div class="summary-content">
+          <h4>User Prompt (Template)</h4>
+          <p>Structured payload: reporting period, 6 business rules, full enriched data table (25 columns &times; 12 SKUs), and output format spec with per-section instructions.</p>
+        </div>
+      </summary>
+      <div class="prompt-body">
+        <pre>Generate a monthly S&OP briefing for March 2026.
+
+<span class="highlight">## Business Rules (critical — follow exactly)</span>
+1. Bioactive Blends launched mid-January 2026.
+   M1 data is pre-launch. Trend is M2→M4 only.
+2. Propolis Tincture 30ml phasing out Q2 2026.
+   Deprioritize reorder unless cover &lt; 30 days.
+3. MGO 1700+ 100g has 3-month target cover
+   (premium price + longer lead times).
+4. Single pooled inventory for Shopify + Amazon.
+5. Order_Arrival_Months = 0 means NO ORDER PLACED.
+6. Use M4 as current rate. Note clear trends.
+
+<span class="highlight">## Enriched Data (pre-computed, verified)</span>
+[Full table: 12 SKUs × 25 columns including
+ combined demand, trend %, cover months, revenue
+ at risk, priority scores, business flags]
+
+<span class="highlight">## Output Format</span>
+1. Executive Summary (3-4 bullets, lead with action)
+2. Sales Performance (trends, channel mix, launches)
+3. Stock Cover Risk Assessment (sorted by severity)
+4. Reorder Recommendations (min 3, ranked by
+   revenue opportunity with full reasoning)
+5. Trend Conflicts &amp; Watch List</pre>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- 5. SAMPLE OUTPUT                        -->
+<!-- ════════════════════════════════════════ -->
+<section id="output">
+  <div class="container">
+    <div class="section-label">Sample Output</div>
+    <h2>What It Produces</h2>
+    <p class="section-intro">From 12 rows of mock inventory data, one command, and about 30 seconds of processing &mdash; the full briefing below.</p>
+
+    <div class="briefing-header-note">
+      <span class="tag">&#9889; Live output from the engine &mdash; not hand-written</span>
+    </div>
+
+    <div class="briefing-embed">
+      <div class="briefing-chrome">
+        <div class="briefing-chrome-dot"></div>
+        <div class="briefing-chrome-dot"></div>
+        <div class="briefing-chrome-dot"></div>
+        <div class="briefing-chrome-url">briefing_20260408.html</div>
+      </div>
+
+      <div class="briefing-content">
+        <h3 class="briefing-title">S&amp;OP Briefing: March 2026</h3>
+
+        <!-- Executive Summary -->
+        <div class="briefing-section">
+          <h4><span class="icon icon-summary">&#9889;</span> Executive Summary</h4>
+          <ul>
+            <li><strong>Reorder MGO 514+ 500g immediately</strong> &mdash; 1.99 months cover, no stock on order, demand up 31% over 4 months. $31,356/month revenue at risk. Priority 1.</li>
+            <li><strong>Revenue momentum strong</strong> &mdash; Total units up 19% Dec&rarr;March, with premium SKUs (MGO 850+, MGO 1700+) growing 30%+ and driving margin expansion.</li>
+            <li><strong>Bioactive Blends gaining traction fast</strong> &mdash; Combined 1,280 units in March (10% of total volume) after 2.5 months in market. Energy and Recovery need reorders within 30 days.</li>
+            <li><strong>Four SKUs below target cover</strong> &mdash; Combined $53K/month revenue exposed. MGO 514+ 500g and MGO 850+ 500g most critical given zero pending orders.</li>
+          </ul>
+        </div>
+
+        <!-- Sales Performance -->
+        <div class="briefing-section">
+          <h4><span class="icon icon-sales">&#9650;</span> Sales Performance</h4>
+          <p><strong>Premium SKUs dominating growth.</strong> MGO 1700+ 100g surged 34% over 4 months to 300 units/month &mdash; our highest growth rate. At $59.99 retail, this momentum adds $5,400/month in high-margin revenue. MGO 850+ 500g grew 33% to 244 units/month, though its 1.8 months cover poses immediate risk.</p>
+          <p><strong>Bioactive Blends exceeding launch targets.</strong> From zero to 1,280 combined units/month in 10 weeks. Immunity leading at 528 units, followed by Energy (388) and Recovery (364). All three accelerating month-over-month with 12-14% sequential growth in March. At $39.99 each, the line already generates $51K/month &mdash; on track to hit $75K/month by May if trends hold.</p>
+          <p><strong>Mid-tier resilience continues.</strong> MGO 263+ and MGO 514+ lines all posted 20%+ growth with consistent acceleration. The 500g formats outpacing 250g formats in growth rate, suggesting customers trading up to larger sizes.</p>
+          <p><strong>Propolis phase-out on track.</strong> 168 units in March maintains steady demand, but 1.37 months cover means natural depletion by early May aligns with Q2 discontinuation timeline.</p>
+        </div>
+
+        <!-- Stock Cover Risk -->
+        <div class="briefing-section">
+          <h4><span class="icon icon-risk">&#9888;</span> Stock Cover Risk Assessment</h4>
+          <p><strong>MGO 514+ 500g</strong> &mdash; Effective cover: 1.99 months vs 2.0 target (-0.01 gap). Zero incoming stock. At 392 units/month and accelerating, will breach 1.5 months cover by mid-April. $31,356/month revenue.</p>
+          <p><strong>MGO 850+ 500g</strong> &mdash; Effective cover: 1.80 months vs 2.0 target (-0.20 gap). Zero incoming stock. Selling 244 units/month with 33% growth trajectory. Will hit 1 month cover by early May. $26,838/month revenue.</p>
+          <p><strong>Bioactive Energy</strong> &mdash; Effective cover: 1.91 months vs 2.0 target (-0.09 gap). Zero incoming stock. New product with 26% growth M2&rarr;M4. At current 388 units/month, stockout risk by late May. $15,516/month revenue.</p>
+          <p><strong>Bioactive Recovery</strong> &mdash; Effective cover: 1.68 months vs 2.0 target (-0.32 gap). Zero incoming stock. Fastest-growing Bioactive at 28%. Critical stockout risk by mid-May at 364 units/month. $14,556/month revenue.</p>
+          <p><strong>Propolis Tincture</strong> &mdash; Effective cover: 1.37 months vs 2.0 target (-0.63 gap). Phase-out product, no reorder planned. Natural depletion aligns with discontinuation timeline.</p>
+        </div>
+
+        <!-- Reorder Recommendations -->
+        <div class="briefing-section">
+          <h4><span class="icon icon-reorder">&#10132;</span> Reorder Recommendations</h4>
+          <div class="priority-card">
+            <h5>Priority 1: MGO 514+ 500g</h5>
+            <p>Order 2,400 units immediately. Current 1.99 months cover with zero pending orders and 31% demand growth creates immediate exposure. This SKU generates $31,356/month at 392 units. Every week of delay costs $7,839 in potential lost sales. Order must be placed this week to avoid stockout.</p>
+          </div>
+          <div class="priority-card">
+            <h5>Priority 2: Bioactive Recovery 250g</h5>
+            <p>Order 1,800 units. Despite being newest launch, already at 1.68 months cover selling 364 units/month. Growing 28% with consistent acceleration. $14,556/month revenue growing rapidly &mdash; protecting momentum critical. Stockout would derail launch trajectory.</p>
+          </div>
+          <div class="priority-card">
+            <h5>Priority 3: MGO 850+ 500g</h5>
+            <p>Order 1,600 units. Premium SKU with 1.80 months cover, growing 33%. At $109.99 retail and 244 units/month, generates $26,838/month with highest margins. Stock depletion would force customers to competitors for ultra-premium segment.</p>
+          </div>
+          <div class="priority-card">
+            <h5>Priority 4: Bioactive Energy 250g</h5>
+            <p>Order 1,600 units. 1.91 months cover at 388 units/month. Middle performer of Bioactive line but still $15,516/month revenue. Maintaining full Bioactive lineup availability crucial for cross-selling.</p>
+          </div>
+        </div>
+
+        <!-- Trend Conflicts -->
+        <div class="briefing-section">
+          <h4><span class="icon icon-watch">&#9673;</span> Trend Conflicts &amp; Watch List</h4>
+          <p><strong>MGO 263+ 500g reorder timing.</strong> Currently 2.49 months cover with no pending orders, just above target. But 23% growth and 684 units/month ($37,613/month) means this will flip to urgent next month. Place order by mid-April to avoid May crisis.</p>
+          <p><strong>Bioactive trajectory validation.</strong> Energy and Recovery growth rates (26-28%) suggest category resonating beyond early adopters. If April maintains double-digit growth, consider increasing safety stock targets to 2.5 months given launch momentum.</p>
+          <p><strong>Premium mix shift accelerating.</strong> MGO 850+ and MGO 1700+ combined units up 30%+ while representing 15% of volume but 24% of revenue. Monitor if this indicates permanent trading up vs seasonal pattern.</p>
+          <p><strong>Amazon share gains.</strong> Preliminary channel data suggests Amazon growing 3-5pp faster than Shopify across most SKUs. Investigate fulfillment capacity if trend continues &mdash; may need to adjust FBA limits.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- 6. RUNNING IT                           -->
+<!-- ════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">Running It</div>
+    <h2>Three Commands</h2>
+    <p class="section-intro">No framework. No build step. One Python file.</p>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+      </div>
+      <div class="terminal-body">
+        <span class="comment"># Install dependencies</span><br>
+        <span class="prompt-char">$</span> <span class="cmd">pip install -r requirements.txt</span><br><br>
+        <span class="comment"># Set API key</span><br>
+        <span class="prompt-char">$</span> <span class="cmd">export ANTHROPIC_API_KEY=sk-ant-...</span><br><br>
+        <span class="comment"># Generate briefing</span><br>
+        <span class="prompt-char">$</span> <span class="cmd">python sop_engine.py --data data/mock_inventory.csv --output output/</span><br>
+        <br>
+        <span style="color:rgba(255,255,255,0.4)">Loading data from data/mock_inventory.csv...</span><br>
+        <span style="color:rgba(255,255,255,0.4)">&nbsp;&nbsp;12 SKUs loaded</span><br>
+        <span style="color:rgba(255,255,255,0.4)">Computing metrics...</span><br>
+        <span style="color:rgba(255,255,255,0.4)">Generating briefing via claude-opus-4-20250514...</span><br>
+        <span style="color:rgba(255,255,255,0.4)">&nbsp;&nbsp;Markdown: output/briefing_20260408.md</span><br>
+        <span style="color:rgba(255,255,255,0.4)">&nbsp;&nbsp;HTML: output/briefing_20260408.html</span><br>
+        <span style="color:var(--green)">Done.</span>
+      </div>
+    </div>
+
+    <table class="cli-table">
+      <thead>
+        <tr><th>Flag</th><th>Default</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>--data</td><td>(required)</td><td>Path to inventory CSV</td></tr>
+        <tr><td>--output</td><td>output/</td><td>Output directory</td></tr>
+        <tr><td>--format</td><td>both</td><td>html, md, or both</td></tr>
+        <tr><td>--month</td><td>March 2026</td><td>Report month for header</td></tr>
+        <tr><td>--model</td><td>claude-opus-4</td><td>Claude model override</td></tr>
+      </tbody>
+    </table>
+
+    <div class="one-file"><strong>One Python file.</strong> ~820 lines. Three dependencies.</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- 7. EXTENDING TO PRODUCTION              -->
+<!-- ════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">Looking Forward</div>
+    <h2>From Prototype to Production</h2>
+    <p class="section-intro">Every component of this tool maps to a real system. Here's how it would evolve inside Manukora's stack.</p>
+
+    <div class="prod-grid">
+      <div class="prod-card current"><h4>CSV file</h4><p>Mock data, manual export</p></div>
+      <div class="prod-arrow">&rarr;</div>
+      <div class="prod-card future"><h4>Shopify API + Cin7</h4><p>Live inventory feeds, auto-pulled</p></div>
+
+      <div class="prod-card current"><h4>Manual run</h4><p>python sop_engine.py</p></div>
+      <div class="prod-arrow">&rarr;</div>
+      <div class="prod-card future"><h4>Scheduled pipeline</h4><p>Cron / Airflow DAG, runs monthly</p></div>
+
+      <div class="prod-card current"><h4>HTML file</h4><p>Opens in browser</p></div>
+      <div class="prod-arrow">&rarr;</div>
+      <div class="prod-card future"><h4>Slack + email delivery</h4><p>PDF attachment, Slack blocks</p></div>
+
+      <div class="prod-card current"><h4>Hardcoded rules</h4><p>Bioactive, Propolis, MGO 1700+</p></div>
+      <div class="prod-arrow">&rarr;</div>
+      <div class="prod-card future"><h4>Config / database</h4><p>Dynamic rules, team-editable</p></div>
+
+      <div class="prod-card current"><h4>Monthly briefing</h4><p>Batch analysis, scheduled</p></div>
+      <div class="prod-arrow">&rarr;</div>
+      <div class="prod-card future"><h4>Threshold alerts</h4><p>Cover &lt; 1 month &rarr; instant Slack ping</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- 8. FOOTER                               -->
+<!-- ════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-name">Built by Zach Newton</div>
+    <div><a href="https://github.com/zachnewts/manukora-sop-engine" target="_blank">View on GitHub</a></div>
+    <div class="footer-tech">Python &middot; Claude API &middot; pandas</div>
+  </div>
+</footer>
+
+</body>
+</html>
