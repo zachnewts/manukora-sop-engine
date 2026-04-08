@@ -168,6 +168,22 @@ def build_user_prompt(enriched_df: pd.DataFrame, report_month: str) -> str:
     ]
     data_table = enriched_df[display_cols].to_string(index=False)
 
+    # Pre-compute portfolio aggregates so the LLM never does row-level arithmetic
+    total_m1 = enriched_df["combined_m1"].sum()
+    total_m4 = enriched_df["combined_m4"].sum()
+    portfolio_growth_pct = (total_m4 - total_m1) / total_m1 * 100
+    total_monthly_revenue = enriched_df["monthly_revenue"].sum()
+
+    bio = enriched_df[enriched_df["is_bioactive"]]
+    bioactive_m4_units = bio["current_rate"].sum()
+    bioactive_share_pct = bioactive_m4_units / total_m4 * 100
+    bioactive_revenue = bio["monthly_revenue"].sum()
+
+    at_risk = enriched_df[enriched_df["cover_vs_target"] < 0]
+    at_risk_count = len(at_risk)
+    at_risk_total_revenue = at_risk["monthly_revenue"].sum()
+    at_risk_total_risk = at_risk["revenue_at_risk"].sum()
+
     return f"""Generate a monthly S&OP briefing for {report_month}.
 
 ## Reporting Context
@@ -197,6 +213,17 @@ Column definitions:
 - cover_vs_target: effective_cover - Target_Months_Cover (negative = below target)
 - revenue_at_risk: monthly_revenue × shortfall months (dollars exposed if stock runs out)
 - reorder_priority_score: revenue_at_risk × urgency_multiplier (composite ranking)
+
+## Portfolio Aggregates (pre-computed — use these exact numbers, do not re-derive)
+- Total combined units M1 (Dec 2025): {total_m1:,.0f}
+- Total combined units M4 (Mar 2026): {total_m4:,.0f}
+- Portfolio unit growth M1→M4: {portfolio_growth_pct:.1f}%
+- Total monthly revenue (M4 rate): ${total_monthly_revenue:,.0f}
+- Bioactive Blends combined M4 units: {bioactive_m4_units:,.0f} ({bioactive_share_pct:.1f}% of total M4 volume)
+- Bioactive Blends combined monthly revenue: ${bioactive_revenue:,.0f}
+- SKUs below target cover: {at_risk_count}
+- At-risk SKUs combined monthly revenue: ${at_risk_total_revenue:,.0f}
+- At-risk SKUs combined revenue_at_risk: ${at_risk_total_risk:,.0f}
 
 ## Output Format
 
