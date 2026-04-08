@@ -838,78 +838,130 @@
     <h2>The Prompt Is the Product</h2>
     <p class="section-intro">Two layers. The system prompt sets the analyst persona and output standards. The user prompt delivers a structured payload: business context, pre-computed data, and format instructions.</p>
 
-    <details class="prompt-card">
+    <details class="prompt-card" open>
       <summary>
         <div class="summary-content">
           <h4>System Prompt</h4>
-          <p>Sets the analyst persona and output standards &mdash; inference, not description. Includes a benchmark example of expected output quality.</p>
+          <p>Sets the analyst persona, output standards, and includes a benchmark example of expected reasoning quality.</p>
         </div>
       </summary>
       <div class="prompt-body">
-        <pre>You are a senior S&OP analyst at a premium DTC consumer brand
-(Manukora — premium Manuka honey). You write monthly briefings
-for the CEO.
+        <pre>You are a senior S&OP analyst at a premium DTC consumer brand (Manukora &mdash; premium
+Manuka honey). You write monthly briefings for the CEO.
 
 Your output standards:
-- Every recommendation MUST include: specific numbers, business
-  impact in dollars, a clear action, and a priority rank.
-- You do <span class="highlight">INFERENCE and JUDGMENT</span> — not data description.
-  Don't say "sales increased 23%." Say what that means for the
-  business and what to do about it.
-- When demand trends conflict with revenue materiality, flag the
-  conflict explicitly and state your recommendation.
+- Every recommendation MUST include: specific numbers, business impact in dollars,
+  a clear action, and a priority rank.
+- You do <span class="highlight">INFERENCE and JUDGMENT &mdash; not data description</span>. Don't say "sales increased
+  23%." Say what that means for the business and what to do about it.
+- When demand trends conflict with revenue materiality (e.g., a declining SKU still
+  generating significant revenue), flag the conflict explicitly and state your
+  recommendation.
 - Write for a CEO who has 5 minutes. Lead with what matters most.
-- Use the pre-computed metrics provided — they are verified.
-  Do not re-derive or round them differently.
-- Only state specific timeframes if they can be directly derived
-  from the data. Use months-of-cover as the unit of measure.
-- Be direct. No hedging, no filler.
+- Use the pre-computed metrics provided &mdash; they are verified. Do not re-derive or
+  round them differently.
+- Only state specific timeframes (days, weeks) if they can be directly derived from
+  the monthly data provided. Do not fabricate or approximate timeframes beyond what
+  the data supports. Use months-of-cover as the unit of measure.
+- Be direct. No hedging, no "it's worth noting," no filler. State the situation,
+  the implication, and the action.
 
-Example of expected output quality:
-<span class="highlight">"MGO 263+ 500g has ~2.5 months of cover at current combined
-sell-through, no stock on order, and demand has grown 23% over
-4 months. At $54.99 retail and ~684 units/month combined, this
-is ~$37K/month in revenue at risk. Cover will drop below target
-before a new order could arrive — recommend ordering immediately.
-Priority 1."</span>
+<span class="highlight">Example of the output quality expected for reorder recommendations:</span>
+"MGO 263+ 500g has ~2.5 months of cover at current combined sell-through, no stock
+on order, and demand has grown 23% over 4 months. At $54.99 retail and ~684
+units/month combined, this is ~$37K/month in revenue at risk. Cover will drop below
+target before a new order could arrive &mdash; recommend ordering immediately. Priority 1."
 
 Match this level of specificity and decisiveness throughout.</pre>
       </div>
     </details>
 
-    <details class="prompt-card">
+    <details class="prompt-card" open>
       <summary>
         <div class="summary-content">
           <h4>User Prompt (Template)</h4>
-          <p>Structured payload: reporting period, 6 business rules, full enriched data table (20 derived columns &times; 12 SKUs), and output format spec with per-section instructions.</p>
+          <p>Complete structured payload sent each run &mdash; reporting context, business rules, the full enriched data table, and output format spec.</p>
         </div>
       </summary>
       <div class="prompt-body">
-        <pre>Generate a monthly S&OP briefing for March 2026.
+        <pre>Generate a monthly S&OP briefing for {report_month}.
 
-<span class="highlight">## Business Rules (critical — follow exactly)</span>
-1. Bioactive Blends launched mid-January 2026.
-   M1 data is pre-launch. Trend is M2→M4 only.
-2. Propolis Tincture 30ml phasing out Q2 2026.
-   Deprioritize reorder unless cover &lt; 30 days.
-3. MGO 1700+ 100g has 3-month target cover
-   (premium price + longer lead times).
-4. Single pooled inventory for Shopify + Amazon.
-5. Order_Arrival_Months = 0 means NO ORDER PLACED.
-6. Use M4 as current rate. Note clear trends.
+<span class="highlight">## Reporting Context</span>
+- Period: M1 = December 2025, M2 = January 2026, M3 = February 2026,
+  M4 = March 2026 (most recent)
+- Report generated: {generation_date}
+- Data source: Combined Shopify + Amazon sales, pooled inventory
 
-<span class="highlight">## Enriched Data (pre-computed, verified)</span>
-[Full table: 12 SKUs × 25 columns including
- combined demand, trend %, cover months, revenue
- at risk, priority scores, business flags]
+<span class="highlight">## Business Rules (critical &mdash; follow these exactly)</span>
+1. <span class="highlight">Bioactive Blends</span> (Immunity, Energy, Recovery) launched mid-January 2026.
+   Their M1 data is pre-launch and meaningless. Trend is computed M2&rarr;M4 only.
+   Flag them as new products.
+2. <span class="highlight">Propolis Tincture 30ml</span> is being phased out Q2 2026. Flag stockout risk but
+   deprioritize for reorder unless cover is under 30 days.
+3. <span class="highlight">MGO 1700+ 100g</span> has a 3-month target cover (not 2) due to premium price and
+   longer lead times.
+4. <span class="highlight">Inventory pool:</span> All Shopify + Amazon orders draw from ONE pooled inventory.
+   Stock_On_Hand is global.
+5. <span class="highlight">Order_Arrival_Months = 0</span> means NO ORDER PLACED, not immediate arrival.
+   Only stock with Order_Arrival_Months &gt; 0 is actually incoming.
+6. <span class="highlight">Sell-through baseline:</span> Use M4 (March 2026) as the current rate. Note clear
+   trends if they change the reorder calculus.
+
+<span class="highlight">## Enriched Data (all metrics pre-computed and verified)</span>
+
+<span style="color:rgba(255,255,255,0.45)">[Full pandas DataFrame inserted here at runtime &mdash; 12 SKUs &times; 24 columns]
+Each SKU row includes: combined_m1..m4, current_rate, trend_pct, trend_direction,
+mom_m2_m1, mom_m3_m2, mom_m4_m3, Stock_On_Hand, arriving_stock, Units_On_Order,
+Order_Arrival_Months, months_cover_raw, effective_cover, Target_Months_Cover,
+cover_vs_target, Retail_Price_USD, monthly_revenue, revenue_at_risk,
+reorder_priority_score, is_bioactive, is_phaseout</span>
+
+Column definitions:
+- combined_m1..m4: Shopify + Amazon units sold per month
+- current_rate: M4 combined (current monthly sell-through)
+- trend_pct: % change M1&rarr;M4 (M2&rarr;M4 for Bioactive Blends)
+- mom_*: month-over-month growth rates (%)
+- months_cover_raw: Stock_On_Hand / current_rate (without incoming)
+- effective_cover: (Stock_On_Hand + arriving_stock) / current_rate
+- cover_vs_target: effective_cover - Target_Months_Cover (negative = below target)
+- revenue_at_risk: monthly_revenue &times; shortfall months (dollars exposed if stock runs out)
+- reorder_priority_score: revenue_at_risk &times; urgency_multiplier (composite ranking)
 
 <span class="highlight">## Output Format</span>
-1. Executive Summary (3-4 bullets, lead with action)
-2. Sales Performance (trends, channel mix, launches)
-3. Stock Cover Risk Assessment (sorted by severity)
-4. Reorder Recommendations (min 3, ranked by
-   revenue opportunity with full reasoning)
-5. Trend Conflicts &amp; Watch List</pre>
+
+Structure the briefing with these sections in this order:
+
+<span class="highlight">### Executive Summary</span>
+3-4 bullets maximum. Lead with the single most important action item. Include
+headline wins, headline risks, and the top reorder action. A CEO should be able
+to read just this section and know what to do.
+
+<span class="highlight">### Sales Performance</span>
+What's hot, what's not. Channel mix observations (Shopify vs Amazon shifts).
+Trend standouts &mdash; accelerating SKUs, decelerating SKUs, and any surprises.
+For Bioactive Blends, assess the launch trajectory (M2&rarr;M4 only).
+
+<span class="highlight">### Stock Cover Risk Assessment</span>
+Every SKU with effective cover below target, sorted by severity (largest negative
+cover_vs_target first). For each: current cover, target, gap, incoming stock
+status, and what happens if no action is taken. Include timeline context &mdash;
+how many weeks/months until stockout at current rate.
+
+<span class="highlight">### Reorder Recommendations</span>
+Minimum 3 SKUs, priority-ranked by revenue opportunity (not just cover risk).
+For each recommendation, include:
+- Current cover and trend
+- Revenue at risk (dollars)
+- Whether stock is on order
+- Specific action (order now, expedite, etc.)
+- Priority rank with reasoning
+
+<span class="highlight">### Trend Conflicts &amp; Watch List</span>
+- SKUs where declining demand conflicts with still-material revenue
+- New products (Bioactive Blends) &mdash; early trajectory assessment and what to
+  watch for next month
+- Propolis phase-out status and any action needed
+- Any other signals worth flagging for next month's review</pre>
       </div>
     </details>
   </div>
