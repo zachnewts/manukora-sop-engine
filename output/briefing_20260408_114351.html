@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manukora S&amp;OP Briefing — March 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --navy: #0f1a2e;
+    --navy-mid: #1e2d45;
+    --navy-light: #2d3a4a;
+    --amber: #d4a843;
+    --amber-bright: #e8b84a;
+    --amber-light: #f5e6c0;
+    --amber-dim: rgba(212, 168, 67, 0.10);
+    --red: #dc3545;
+    --red-bg: rgba(220, 53, 69, 0.07);
+    --red-border: rgba(220, 53, 69, 0.20);
+    --green: #198754;
+    --green-bg: rgba(25, 135, 84, 0.07);
+    --green-border: rgba(25, 135, 84, 0.20);
+    --orange: #e67e22;
+    --orange-bg: rgba(230, 126, 34, 0.07);
+    --orange-border: rgba(230, 126, 34, 0.20);
+    --blue: #3b82f6;
+    --blue-bg: rgba(59, 130, 246, 0.07);
+    --blue-border: rgba(59, 130, 246, 0.20);
+    --purple: #7c3aed;
+    --purple-bg: rgba(124, 58, 237, 0.07);
+    --purple-border: rgba(124, 58, 237, 0.20);
+    --gray-50: #f8f9fb;
+    --gray-100: #f1f3f5;
+    --gray-200: #e2e5e9;
+    --gray-300: #cdd1d7;
+    --gray-400: #9ca3af;
+    --gray-500: #7b8290;
+    --gray-600: #5f6673;
+    --gray-900: #111827;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "SF Mono", "Fira Code", "Fira Mono", "Cascadia Code", Menlo, monospace;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--navy);
+    background: linear-gradient(160deg, #f0ebe3 0%, var(--gray-50) 40%, #eef1f5 100%);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+    border-radius: var(--radius);
+    padding: 36px 40px 32px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: "";
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(212,168,67,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  header .brand {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+  }
+
+  header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+
+  header .meta {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  header .meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* ── Section Cards ── */
+  .section {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 0;
+    margin-bottom: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .section-header {
+    padding: 20px 32px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .section-body {
+    padding: 20px 32px 28px;
+  }
+
+  /* Section color variants */
+  .section--summary .section-header { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); border-bottom: none; }
+  .section--summary .section-header h2 { color: #fff; border: none; padding: 0; margin: 0; }
+  .section--summary .section-icon { background: rgba(212,168,67,0.2); }
+  .section--summary .section-body { background: var(--navy); color: rgba(255,255,255,0.88); padding: 0 32px 28px; }
+  .section--summary li { border-color: rgba(255,255,255,0.1); }
+  .section--summary strong { color: #fff; }
+
+  .section--sales .section-icon { background: var(--green-bg); border: 1px solid var(--green-border); }
+  .section--risk .section-icon { background: var(--red-bg); border: 1px solid var(--red-border); }
+  .section--reorder .section-icon { background: var(--orange-bg); border: 1px solid var(--orange-border); }
+  .section--watch .section-icon { background: var(--purple-bg); border: 1px solid var(--purple-border); }
+
+  h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+    padding: 0;
+    border: none;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-top: 24px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .section-body > p:first-child { margin-top: 0; }
+
+  p { margin-bottom: 14px; }
+
+  strong { font-weight: 650; }
+
+  /* ── Lists ── */
+  ul, ol {
+    margin: 8px 0 16px 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    padding: 10px 16px;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--gray-100);
+    position: relative;
+    padding-left: 28px;
+  }
+
+  li:last-child {
+    border-bottom: none;
+  }
+
+  li::before {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 18px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+  }
+
+  ol {
+    counter-reset: li-counter;
+  }
+
+  ol li {
+    padding-left: 36px;
+  }
+
+  ol li::before {
+    content: counter(li-counter);
+    counter-increment: li-counter;
+    background: var(--amber);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 11px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 8px;
+    top: 12px;
+  }
+
+  li > ul, li > ol {
+    margin-top: 8px;
+    margin-bottom: 4px;
+    margin-left: 4px;
+  }
+
+  li > ul li, li > ol li {
+    padding: 4px 8px 4px 24px;
+    border-bottom: none;
+    font-size: 14px;
+  }
+
+  li > ul li::before {
+    width: 4px;
+    height: 4px;
+    top: 13px;
+    background: var(--gray-400);
+  }
+
+  /* ── Priority cards within reorder section ── */
+  .section--reorder .section-body > p {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--amber);
+  }
+
+  .section--reorder .section-body > p:first-of-type {
+    border-left-color: var(--red);
+  }
+
+  .section--reorder .section-body > p:nth-of-type(2) {
+    border-left-color: var(--orange);
+  }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  th {
+    background: var(--navy);
+    color: #fff;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  tr:nth-child(even) td {
+    background: var(--gray-50);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  td.num, th.num {
+    text-align: right;
+    font-feature-settings: "tnum";
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  /* ── Code / preformatted ── */
+  code {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--gray-100);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  pre {
+    background: var(--gray-100);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 13px;
+    margin: 12px 0;
+  }
+
+  /* ── Blockquotes ── */
+  blockquote {
+    border-left: 4px solid var(--amber);
+    background: var(--amber-dim);
+    padding: 14px 20px;
+    margin: 16px 0;
+    border-radius: 0 8px 8px 0;
+    font-style: normal;
+  }
+
+  blockquote p { margin-bottom: 0; }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding-top: 28px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  footer .engine {
+    font-weight: 700;
+    color: var(--gray-500);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+
+  footer .sub {
+    margin-top: 4px;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body {
+      background: #fff;
+      font-size: 12px;
+    }
+
+    .container {
+      max-width: 100%;
+      padding: 0;
+    }
+
+    header {
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .section {
+      box-shadow: none;
+      border: 1px solid var(--gray-200);
+      break-inside: avoid;
+      page-break-inside: avoid;
+      border-radius: 0;
+    }
+
+    footer {
+      margin-top: 24px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">Manukora</div>
+    <h1>S&amp;OP Monthly Briefing — March 2026</h1>
+    <div class="meta">
+      <span>Generated April 08, 2026</span>
+      <span>Data: mock_inventory.csv</span>
+      <span>Powered by Claude + pre-computed analytics</span>
+    </div>
+  </header>
+
+  <div class="section"><h1>S&amp;OP Monthly Briefing — March 2026</h1>
+</div>
+<div class="section section--summary">
+  <div class="section-header">
+    <div class="section-icon">&#9889;</div>
+    <h2>Executive Summary</h2>
+  </div>
+  <div class="section-body">
+<ul>
+<li><strong>ACTION NOW:</strong> Order MGO 514+ 500g immediately — cover drops below 2 months in 10 days, putting $31K/month at risk. Priority 1.</li>
+<li><strong>Launch success:</strong> Bioactive Blends hit $51K combined monthly revenue in 8 weeks since launch, with Immunity leading at $21K/month and 25% growth trajectory.</li>
+<li><strong>Revenue concentration:</strong> Top 3 SKUs (MGO 263+ 250g, 514+ 250g, 850+ 250g) drive $141K/month (41% of total) — all adequately stocked through May.</li>
+<li><strong>Emerging risk:</strong> MGO 850+ 500g approaches stockout territory with 1.8 months cover and 33% demand growth — needs June order planning now.</li>
+</ul>
+</div>
+</div>
+<div class="section section--sales">
+  <div class="section-header">
+    <div class="section-icon">&#9650;</div>
+    <h2>Sales Performance</h2>
+  </div>
+  <div class="section-body">
+<p><strong>Momentum leaders:</strong> MGO 514+ 500g (+31%), MGO 1700+ 100g (+34%), and MGO 850+ 500g (+33%) show strongest acceleration. The premium tiers (514+, 850+, 1700+) collectively grew 28% over 4 months vs 18% for entry-tier MGO 100+ and 263+.</p>
+<p><strong>Bioactive launch trajectory (M2→M4):</strong> Combined 1,280 units/month across three SKUs after 8 weeks. Immunity performing strongest at 528 units/month (+25% since launch), followed by Energy at 388 units (+26%) and Recovery at 364 units (+28%). Launch velocity exceeds comparable honey SKU performance at similar price points — these will be $600K+ annual SKUs by Q3 if trajectory holds.</p>
+<p><strong>Channel dynamics:</strong> Amazon growth outpacing Shopify by ~15 percentage points across the portfolio based on month-over-month patterns. Premium SKUs (850+, 1700+) showing particular Amazon strength — investigate whether to adjust Amazon FBA allocations upward for these tiers.</p>
+<p><strong>Deceleration watch:</strong> Only MGO 100+ 250g showing softening momentum (growth rate dropped from 10.3% to 0.8% MoM) despite 12% overall growth. At 1,032 units/month it remains a $26K/month contributor — monitor for potential plateau.</p>
+</div>
+</div>
+<div class="section section--risk">
+  <div class="section-header">
+    <div class="section-icon">&#9888;</div>
+    <h2>Stock Cover Risk Assessment</h2>
+  </div>
+  <div class="section-body">
+<p><strong>CRITICAL — Below Target Coverage:</strong></p>
+<ol>
+<li><strong>MGO 514+ 500g:</strong> 1.99 months cover vs 2.0 target (-0.01 months). No stock on order. Will breach target within 10 days at 392 units/month burn rate.</li>
+<li><strong>MGO 850+ 500g:</strong> 1.80 months cover vs 2.0 target (-0.20 months). No stock on order. Stockout risk by early June without action.</li>
+<li><strong>Bioactive Energy:</strong> 1.91 months cover vs 2.0 target (-0.09 months). No stock on order. New product showing strong momentum — stockout would damage launch trajectory.</li>
+<li><strong>Bioactive Recovery:</strong> 1.68 months cover vs 2.0 target (-0.32 months). No stock on order. Lowest cover in portfolio — will hit stockout by mid-May.</li>
+<li><strong>Propolis Tincture:</strong> 1.37 months cover vs 2.0 target (-0.63 months). Phase-out product but still generating $6K/month — stockout in 6 weeks without bridge order.</li>
+</ol>
+</div>
+</div>
+<div class="section section--reorder">
+  <div class="section-header">
+    <div class="section-icon">&#10132;</div>
+    <h2>Reorder Recommendations</h2>
+  </div>
+  <div class="section-body">
+<p><strong>Priority 1: MGO 514+ 500g</strong>
+Order immediately. Cover at 1.99 months with 31% demand growth and no stock incoming. This SKU generates $31,356/month at current 392 unit rate. Every week of delay increases stockout risk — at current trajectory, demand will hit 430 units/month by May. Order 2,600 units minimum.</p>
+<p><strong>Priority 2: Bioactive Recovery 250g</strong>
+Order within 2 weeks. Despite being new, already at $14,556/month revenue with only 1.68 months cover. Growing 28% since launch with strong month-over-month acceleration (14%→13%→14%). Stockout would crater launch momentum. Order 2,200 units.</p>
+<p><strong>Priority 3: MGO 850+ 500g</strong>
+Plan June delivery now. Premium SKU at $110 retail generating $26,838/month with 33% growth trajectory. Current 1.80 months cover will erode quickly as demand approaches 280 units/month by May. Order 2,000 units for June arrival.</p>
+<p><strong>Priority 4: Bioactive Energy 250g</strong>
+Order with Recovery for efficiency. $15,516/month revenue at risk with 1.91 months cover. Growing 26% since launch. Order 2,000 units.</p>
+</div>
+</div>
+<div class="section section--default">
+  <div class="section-header">
+    <div class="section-icon">&#8226;</div>
+    <h2>Trend Conflicts &amp; Watch List</h2>
+  </div>
+  <div class="section-body">
+<p><strong>Demand/Revenue Conflict:</strong> MGO 100+ 250g shows decelerating growth (momentum dropped to 0.8% MoM) but remains #4 revenue SKU at $26K/month. Maintain current 8-month cover but reduce future order quantities by 15%.</p>
+<p><strong>Bioactive Trajectory:</strong> All three Bioactive SKUs on track to exceed $20K/month by Q3. Immunity already there. Watch April data closely — if growth rates hold above 20%, consider doubling standard order quantities to prevent summer stockouts.</p>
+<p><strong>Propolis Phase-Out:</strong> Still moving 168 units/month ($5,878 revenue) with 1.37 months cover. Requires decision by April 20: either place final 500-unit bridge order or accept May stockout and accelerate transition to Bioactive alternatives.</p>
+<p><strong>Next Month Focus:</strong> MGO 263+ 500g enters risk zone next month — 2.49 months cover today will drop below 2.0 by early May. Despite no current stock on order, this $37K/month SKU with 23% growth needs May order planning.</p></div>
+</div>
+
+  <footer>
+    <div class="engine">Manukora S&amp;OP Briefing Engine</div>
+    <div class="sub">Pre-computed analytics + Claude inference</div>
+  </footer>
+</div>
+</body>
+</html>
