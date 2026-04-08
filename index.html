@@ -712,6 +712,188 @@
     .briefing-content { padding: 24px; }
   }
 
+  /* ── Part 2 Divider ── */
+  .part-divider {
+    text-align: center;
+    padding: 80px 0 0;
+  }
+
+  .part-divider .divider-line {
+    width: 80px;
+    height: 3px;
+    background: var(--amber);
+    margin: 0 auto 24px;
+    border-radius: 2px;
+  }
+
+  .part-divider h2 {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 4px;
+  }
+
+  .part-divider p {
+    font-size: 15px;
+    color: var(--gray-500);
+  }
+
+  /* ── Architecture Prose ── */
+  .arch-prose {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--gray-600);
+  }
+
+  .arch-prose p {
+    margin-bottom: 16px;
+  }
+
+  .arch-prose strong {
+    color: var(--navy);
+    font-weight: 650;
+  }
+
+  .arch-prose h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 40px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .arch-prose h3:first-of-type {
+    margin-top: 0;
+  }
+
+  /* ── Architecture Diagram ── */
+  .arch-diagram {
+    background: var(--navy);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 24px 0 32px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.7);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .arch-diagram .hl { color: var(--amber-bright); }
+  .arch-diagram .dim { color: rgba(255,255,255,0.35); }
+
+  /* ── Architecture Tables ── */
+  .arch-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 16px 0 24px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .arch-table th {
+    background: var(--navy);
+    color: #fff;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .arch-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    color: var(--gray-600);
+    line-height: 1.5;
+  }
+
+  .arch-table td:first-child {
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .arch-table tr:nth-child(even) td {
+    background: var(--gray-50);
+  }
+
+  .arch-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .arch-table code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--gray-100);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--navy);
+  }
+
+  /* ── Callout Box ── */
+  .arch-callout {
+    background: var(--amber-dim);
+    border-left: 4px solid var(--amber);
+    border-radius: 0 8px 8px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+
+  .arch-callout p {
+    margin-bottom: 0;
+    font-size: 15px;
+  }
+
+  .arch-callout strong {
+    color: var(--navy);
+  }
+
+  /* ── Numbered Steps ── */
+  .arch-steps {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 24px;
+    counter-reset: arch-step;
+  }
+
+  .arch-steps li {
+    padding: 12px 16px 12px 52px;
+    position: relative;
+    border-bottom: 1px solid var(--gray-100);
+    counter-increment: arch-step;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--gray-600);
+  }
+
+  .arch-steps li:last-child { border-bottom: none; }
+
+  .arch-steps li::before {
+    content: counter(arch-step);
+    position: absolute;
+    left: 8px;
+    top: 12px;
+    width: 28px;
+    height: 28px;
+    background: var(--amber);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 13px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .arch-steps li strong { color: var(--navy); }
+
   /* ── Print ── */
   @media print {
     body { background: #fff; font-size: 12px; }
@@ -1139,7 +1321,161 @@ For each recommendation, include:
 </section>
 
 <!-- ════════════════════════════════════════ -->
-<!-- 8. FOOTER                               -->
+<!-- PART 2: MORNING INTELLIGENCE BRIEF      -->
+<!-- ════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="part-divider">
+      <div class="divider-line"></div>
+      <h2>Part 2</h2>
+      <p>Architecture Brief</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-label">Morning Intelligence Brief</div>
+    <h2>Daily CEO Brief &mdash; Architecture</h2>
+    <p class="section-intro">A daily automated pipeline that delivers a 2-minute narrative to the CEO at 6am local time, surfacing the 3 most important things about the business that day.</p>
+
+    <div class="arch-prose">
+
+      <h3>What It Is</h3>
+
+      <p>Same architectural pattern as the S&amp;OP engine: pre-compute metrics from live data sources, score and rank signals by business impact, let Claude synthesize the top 3 into a narrative a CEO can read in 2 minutes. The difference: this runs daily, pulls from live APIs instead of CSV, and delivers directly to Slack.</p>
+
+      <div class="arch-diagram"><span class="dim">5:30am NZT daily:</span>
+
+<span class="hl">Shopify Admin API</span> &mdash;&mdash;&mdash;&mdash;&#9488;
+                          &#9474;
+<span class="hl">Amazon SP-API</span> &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&#9500;&mdash;&mdash;&rarr; <span class="hl">[Signal Scorer]</span> &mdash;&rarr; Top 3 &mdash;&rarr; <span class="hl">[Claude]</span> &mdash;&rarr; <span class="hl">Slack DM</span>
+                          &#9474;
+<span class="hl">Gorgias API</span> &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&#9496;
+
+<span class="dim">Each day's pull &rarr; stored in Supabase &rarr; becomes tomorrow's baseline</span></div>
+
+      <h3>Data Sources &amp; APIs</h3>
+
+      <p><strong>Shopify Admin REST API</strong> &mdash; commercial health and inventory.</p>
+      <table class="arch-table">
+        <thead><tr><th>Endpoint</th><th>What It Provides</th></tr></thead>
+        <tbody>
+          <tr><td><code>GET /orders.json?created_at_min={yesterday}</code></td><td>Order volume, revenue, AOV, discount usage, refund rate</td></tr>
+          <tr><td><code>GET /inventory_levels.json</code></td><td>Current stock positions (diffed against previous day&rsquo;s snapshot)</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Amazon SP-API</strong> &mdash; the second revenue channel.</p>
+      <table class="arch-table">
+        <thead><tr><th>Endpoint</th><th>What It Provides</th></tr></thead>
+        <tbody>
+          <tr><td><code>GET /reports</code> <span style="font-size:12px;color:var(--gray-400)">(GET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE)</span></td><td>Amazon order data, revenue, units</td></tr>
+          <tr><td><code>GET /fba/inventory/v1/summaries</code></td><td>FBA inventory levels</td></tr>
+          <tr><td><code>GET /catalog/2022-04-01/items/{asin}</code></td><td>BSR (Best Seller Rank) for key ASINs</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Gorgias REST API</strong> &mdash; customer health and early warning signals.</p>
+      <table class="arch-table">
+        <thead><tr><th>Endpoint</th><th>What It Provides</th></tr></thead>
+        <tbody>
+          <tr><td><code>GET /api/tickets?created_at_gte={yesterday}</code></td><td>Ticket volume, new vs open vs resolved counts</td></tr>
+          <tr><td><code>GET /api/tickets?tags={tag}</code></td><td>Trending issue categories (shipping, damage, product questions)</td></tr>
+          <tr><td><code>GET /api/satisfaction-surveys</code></td><td>CSAT scores, sentiment shifts</td></tr>
+        </tbody>
+      </table>
+
+      <p>All three APIs are pulled into a lightweight <strong>Supabase</strong> (Postgres) store. Each day&rsquo;s pull becomes a row &mdash; this gives you trailing baselines for free, and means the system gets smarter over time without any extra work.</p>
+
+      <h3>Signal Scoring &mdash; How to Pick the Top 3</h3>
+
+      <p>The pipeline generates ~15 candidate signals from yesterday&rsquo;s data, scores each one, and takes the top 3. This is the core logic &mdash; it determines what the CEO sees.</p>
+
+      <table class="arch-table">
+        <thead><tr><th>Signal</th><th>Source</th><th>How It&rsquo;s Scored</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue anomaly</td><td>Shopify + Amazon</td><td>$ deviation from same-weekday 4-week average</td></tr>
+          <tr><td>Order volume spike/drop</td><td>Shopify + Amazon</td><td>% deviation &times; daily revenue weight</td></tr>
+          <tr><td>AOV shift</td><td>Shopify</td><td>$ change &times; order volume (magnifies impact)</td></tr>
+          <tr><td>Inventory threshold breach</td><td>Shopify</td><td>Revenue-at-risk for any SKU that crossed below target cover overnight</td></tr>
+          <tr><td>Amazon BSR movement</td><td>SP-API</td><td>Rank change &times; revenue weight (big drop on a top SKU = high signal)</td></tr>
+          <tr><td>Channel mix shift</td><td>Both</td><td>Flagged if Amazon&rsquo;s share jumped or dropped 5%+ in a single day</td></tr>
+          <tr><td>Refund rate spike</td><td>Shopify</td><td>% refund rate vs 30-day average &times; revenue exposure</td></tr>
+          <tr><td>FBA inventory mismatch</td><td>SP-API</td><td>FBA units diverged from expected based on sales velocity</td></tr>
+          <tr><td>CX ticket volume spike</td><td>Gorgias</td><td>% increase vs same-weekday average &times; resolution backlog</td></tr>
+          <tr><td>Issue category surge</td><td>Gorgias</td><td>Any single tag (e.g. &ldquo;damaged&rdquo;, &ldquo;wrong item&rdquo;) up 2x+ overnight</td></tr>
+          <tr><td>CSAT drop</td><td>Gorgias</td><td>Rolling 7-day CSAT below threshold &times; ticket volume</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Scoring formula:</strong> <code style="background:var(--gray-100);padding:4px 8px;border-radius:4px;">signal_score = abs(deviation_from_baseline) &times; monthly_revenue_weight</code></p>
+
+      <p>Revenue-weighted so the brief surfaces things that matter at the business level, not just statistical anomalies. A 50% spike in Propolis Tincture tickets (small SKU) scores lower than a 10% revenue drop on MGO 263+ 250g (top revenue SKU).</p>
+
+      <p><strong>Two things that prevent false positives:</strong></p>
+      <ol class="arch-steps">
+        <li><strong>Day-of-week normalization.</strong> Sunday is always lower than Tuesday. Every signal compares yesterday to the same weekday&rsquo;s trailing 4-week average, not a simple 7-day mean. This kills most false positives.</li>
+        <li><strong>Diversity constraint.</strong> Don&rsquo;t surface 3 inventory alerts. Cap at 2 signals per category, ensure at least 2 categories are represented in the top 3.</li>
+      </ol>
+
+      <h3>The Timezone Problem</h3>
+
+      <p>6am NZ is roughly noon the previous day in LA. If Mike is in LA, a brief generated from NZ overnight data arrives mid-afternoon yesterday &mdash; and he might not read it until the next morning, 16+ hours later. A stale brief is worse than no brief.</p>
+
+      <div class="arch-callout">
+        <p><strong>Key design decision:</strong> Don&rsquo;t delay a stale brief &mdash; regenerate with fresh data. The brief should reflect the most recent 24 hours relative to when Mike actually reads it, not when the cron job ran.</p>
+      </div>
+
+      <ol class="arch-steps">
+        <li><strong>5:30am NZT:</strong> Pipeline runs. Brief generates. Delivered to Slack DM at 6am NZT.</li>
+        <li><strong>Read tracking:</strong> A lightweight check runs every 3 hours via Slack&rsquo;s <code>conversations.history</code> API &mdash; has Mike viewed the message?</li>
+        <li><strong>If unread after 12 hours:</strong> Re-run the entire pipeline with current data. Deliver a <strong>fresh</strong> brief via Slack DM + SMS. This catches the LA morning scenario &mdash; Mike wakes up and gets a brief based on the last 24 hours, not yesterday&rsquo;s NZ morning.</li>
+        <li><strong>On-demand:</strong> Mike types <code>/brief</code> in Slack at any time &rarr; immediate regeneration with live data. Handles the in-flight case.</li>
+      </ol>
+
+      <p><strong>Why this works:</strong> No location detection needed. Read status is the only signal required. If Mike reads at 6am NZ, the check sees it and skips re-delivery. If he doesn&rsquo;t, he gets a fresh one at his local morning. If he&rsquo;s mid-flight, <code>/brief</code> on landing. Always fresh, never stale.</p>
+
+      <h3>Cost</h3>
+
+      <table class="arch-table">
+        <thead><tr><th>Component</th><th>Monthly Cost</th></tr></thead>
+        <tbody>
+          <tr><td>Shopify Admin API</td><td>$0 (included in Plus)</td></tr>
+          <tr><td>Amazon SP-API</td><td>$0 (free for registered sellers)</td></tr>
+          <tr><td>Gorgias API</td><td>$0 (included in plan)</td></tr>
+          <tr><td>Claude API (Opus, 1&ndash;2 calls/day)</td><td>~$20&ndash;30</td></tr>
+          <tr><td>Supabase (baseline storage, free tier)</td><td>$0</td></tr>
+          <tr><td>Compute (Railway/Lambda cron)</td><td>~$5</td></tr>
+          <tr><td>Twilio SMS fallback (~30 msgs/month)</td><td>~$2</td></tr>
+          <tr><td><strong>Total</strong></td><td><strong>~$30/month</strong></td></tr>
+        </tbody>
+      </table>
+
+      <p>At $3M annual revenue, this is less than one hour of the CEO&rsquo;s time per month.</p>
+
+      <h3>Failure Modes</h3>
+
+      <table class="arch-table">
+        <thead><tr><th>Failure</th><th>Detection</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td>Shopify API down</td><td>HTTP 5xx after 3 retries</td><td>Deliver brief with Amazon + Gorgias data only. Note: &ldquo;Shopify data unavailable.&rdquo;</td></tr>
+          <tr><td>Amazon SP-API rate limit</td><td>429 or timeout</td><td>Use yesterday&rsquo;s cached data. Flag it in the brief.</td></tr>
+          <tr><td>Gorgias API down</td><td>HTTP error after retries</td><td>Deliver without CX signals. Note the gap.</td></tr>
+          <tr><td>Claude API failure</td><td>API error or timeout</td><td>Template fallback: top 3 signals as bullet points with numbers, no narrative. Ugly but functional.</td></tr>
+          <tr><td>False positive</td><td>Normal variance flagged as anomaly</td><td>Day-of-week normalized baselines. Compare to same-weekday trailing 4-week average.</td></tr>
+          <tr><td>Slack delivery failure</td><td>No delivery confirmation</td><td>SMS fallback via Twilio. Email as tertiary.</td></tr>
+          <tr><td>All data sources down</td><td>All APIs failing simultaneously</td><td>Send &ldquo;Data unavailable&rdquo; notification. Don&rsquo;t fabricate a brief.</td></tr>
+          <tr><td>Mike unreachable 24+ hours</td><td>No read receipt, no <code>/brief</code></td><td>Brief auto-expires. Next morning&rsquo;s brief covers the gap.</td></tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- 9. FOOTER                               -->
 <!-- ════════════════════════════════════════ -->
 <footer>
   <div class="container">
